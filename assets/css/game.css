@@ -3,7 +3,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   background-color: #f1f1f1;
+  transition: background-color 0.2s;
+}
+
+.game-actions {
+  margin: 5vh;
+}
+
+.game.isSet {
+  background-color: green;
+}
+
+.game.gameOver .card .shape {
+  background-color: #ccc !important;
+  border-color: #ccc !important;
 }
 
 .game-table {
@@ -20,43 +35,50 @@
   justify-content: center;
   flex-basis: auto;
   width: 22vw;
-  margin: 0.7vw;
   height: 20vh;
-  border-radius: 10px;
-  padding: 2%;
-  box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.35);
-  transition: box-shadow 0.1s, top 0.1s;
+  margin: 1vh 0.7vw;
+  border-radius: 1vw;
+  padding: 2vw 1.5vw;
+  box-shadow: 0 0.2vh 0.5vh 0 rgba(0,0,0,0.35);
+  transition: box-shadow 0.1s, top 0.1s, width 0.1s;
   cursor: pointer;
   top: 0;
 }
 
 .card.selected {
-  box-shadow: 0px 9px 8px 0px rgba(0,0,0,0.35);
-  top: -7px;
+  box-shadow: 0vh 1.3vh 0.5vh 0 rgba(0,0,0,0.35);
+  top: -1.3vh;
+  width: 24vw;
 }
 
 .card .shape {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 5vw;
+  width: 4.4vw;
   height: 100%;
-  margin: 0 6%;
+  margin: 0 5%;
+  transition: background-color 1.1s, border-color 1.1s;
+}
+
+.card.initial .shape {
+  background-color: white !important;
+  border-color: white !important;
 }
 
 .red .shape {
-  background-color: red;
-  border-color: red;
+  background-color: #ef60a7;
+  border-color: #ef60a7;
 }
 
 .green .shape {
-  background-color: green;
-  border-color: green;
+  background-color: #40e0bc;
+  border-color: #40e0bc;
 }
 
 .purple .shape {
-  background-color: purple;
-  border-color: purple;
+  background-color: #6570c7;
+  border-color: #6570c7;
 }
 
 .inner {
@@ -64,6 +86,12 @@
   width: 80%;
   height: 85%;
   background-color: white;
+}
+
+/* Diamonds need a bit more border than other shapes */
+.diamond .shape .inner {
+  width: 70%;
+  height: 75%;
 }
 
 .pill .shape, .pill .shape .inner {
@@ -88,9 +116,30 @@
   display: block;
   background: repeating-linear-gradient(
     0deg,
-    rgba(255, 255, 255, 1.0) 0px,
-    rgba(255, 255, 255, 1.0) 10px,
-    rgba(255, 255, 255, 0.0) 10px,
-    rgba(255, 255, 255, 0.0) 20px
+    rgba(255, 255, 255, 1.0) 0vh,
+    rgba(255, 255, 255, 1.0) 1vh,
+    rgba(255, 255, 255, 0.0) 1vh,
+    rgba(255, 255, 255, 0.0) 2vh
   )
+}
+
+@media (orientation: portrait) {
+  .card {
+    width: 30vw;
+    height: 12vh;
+  }
+
+  .card.selected {
+    width: 31.5vw;
+  }
+
+  .shaded .shape .inner {
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 1.0) 0vh,
+      rgba(255, 255, 255, 1.0) 0.5vh,
+      rgba(255, 255, 255, 0.0) 0.5vh,
+      rgba(255, 255, 255, 0.0) 1vh
+    )
+  }
 }

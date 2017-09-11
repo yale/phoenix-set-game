@@ -17,7 +17,12 @@ defmodule SetGameWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-    get "/game", PageController, :game
+    get "/game/new", GameController, :new
+    get "/game/:id", GameController, :show
+
+    get "/game/:id/admin", AdminController, :show
+
+    get "/error/404", ErrorController, :not_found
   end
 
   # Other scopes may use custom stacks.

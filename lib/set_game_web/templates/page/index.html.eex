@@ -1,0 +1,1 @@
+<a class="btn btn-primary btn-large" href="<%= game_path @conn, :new %>">New Game</a>

@@ -13,6 +13,8 @@ defmodule SetGame.Application do
       # Start the endpoint when the application starts
       supervisor(SetGameWeb.Endpoint, []),
       # Start your own worker by calling: SetGame.Worker.start_link(arg1, arg2, arg3)
+      worker(Registry, [[keys: :unique, name: :registry]]),
+      supervisor(SetGame.ServerSupervisor, []),
       # worker(SetGame.Worker, [arg1, arg2, arg3]),
     ]
 
