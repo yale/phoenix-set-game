@@ -17,7 +17,7 @@ defmodule SetGameWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-    get "/game/new", GameController, :new
+    post "/game/create", GameController, :create
     get "/game/:id", GameController, :show
 
     get "/game/:id/admin", AdminController, :show

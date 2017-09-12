@@ -1,14 +1,14 @@
 defmodule SetGameWeb.GameController do
   use SetGameWeb, :controller
 
-  def new(conn, %{"deck_size" => deck_size}) do
+  def create(conn, %{"deck_size" => deck_size}) do
     SetGame.Deck.new
     |> SetGame.Deck.shuffle
     |> Enum.take(String.to_integer(deck_size))
     |> new_game_and_redirect(conn)
   end
 
-  def new(conn, _assigns) do
+  def create(conn, _assigns) do
     new_game_and_redirect(conn)
   end
 
