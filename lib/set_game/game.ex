@@ -1,6 +1,5 @@
 defmodule SetGame.Game do
   alias SetGame.Deck
-  alias SetGame.Card
   alias SetGame.Hand
   alias SetGame.Table
 
@@ -9,12 +8,18 @@ defmodule SetGame.Game do
     hand: Hand.new,
     is_set: false,
     any_sets: false,
-    id: nil
+    id: nil,
+    started_at: nil
 
   @table_size 12
+  @max_duration 172800
 
   def new(deck \\ Deck.new) do
-    %SetGame.Game{ deck: Deck.shuffle(deck), id: random_id(10) }
+    %SetGame.Game{
+      deck: Deck.shuffle(deck),
+      id: random_id(10),
+      started_at: DateTime.utc_now |> DateTime.to_unix
+    }
   end
 
   def start(%{ table: table, deck: deck } = game) do
@@ -40,6 +45,11 @@ defmodule SetGame.Game do
   def game_over?(%{ any_sets: false, deck: [] }), do: true
   def game_over?(_game), do: false
 
+  def time_out?(%{ started_at: started_at }) do
+    now_seconds = DateTime.utc_now |> DateTime.to_unix
+    now_seconds - started_at > @max_duration
+  end
+
   def guess(%{ hand: hand } = game) do
     cond do
       Hand.is_set?(hand) -> %SetGame.Game{ game | is_set: true }
@@ -51,9 +61,12 @@ defmodule SetGame.Game do
     %SetGame.Game{ game | is_set: false, hand: Hand.new }
   end
 
+  # When a set is guessed correctly, the guessed cards are replaced
   def replace_guessed_cards(game) do
     guessed_cards = MapSet.to_list(game.hand)
+
     {new_table, new_deck} = Table.replace_cards(game.table, guessed_cards, game.deck)
+
     %SetGame.Game{ game |
       table: new_table,
       deck: new_deck,
@@ -63,6 +76,7 @@ defmodule SetGame.Game do
     }
   end
 
+  # If there are no sets, the game deals three more cards to the table
   def deal_three_more(%{ deck: deck, table: table } = game) do
     {:ok, new_deck, new_table} = Deck.deal(deck, table, 3)
 

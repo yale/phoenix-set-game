@@ -10,6 +10,6 @@ defmodule SetGameWeb.PageController do
 
     conn
     |> assign(:game, game)
-    |> render "game.html"
+    |> render("game.html")
   end
 end

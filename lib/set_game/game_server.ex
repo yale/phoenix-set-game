@@ -1,6 +1,9 @@
 defmodule SetGame.GameServer do
   use GenServer
   alias SetGame.Game
+  @cleanup_after 10000
+
+  # Interface functions
 
   def start(pid), do: GenServer.call(pid, :start)
 
@@ -24,9 +27,22 @@ defmodule SetGame.GameServer do
     GenServer.start_link(__MODULE__, initial_game, name: via_tuple(initial_game.id))
   end
 
+  # Implementation functions
+
   def init(game) do
     IO.puts("Starting GameServer #{game.id}")
+    Process.send_after(self(), :cleanup, @cleanup_after)
     {:ok, game}
+  end
+
+  def handle_info(:cleanup, game) do
+    cond do
+      Game.game_over?(game) -> {:stop, :normal, game}
+      Game.time_out?(game) -> {:stop, :normal, game}
+      true ->
+        Process.send_after(self(), :cleanup, @cleanup_after)
+        {:noreply, game}
+    end
   end
 
   def handle_call(:start, _from, game) do
@@ -41,24 +57,23 @@ defmodule SetGame.GameServer do
   # NOTE: This seems like a lot of game logic baked into the server
   def handle_call({:pick_card, card_id}, _from, game) do
     card = Enum.find(game.table, fn(c) -> c.id == card_id end)
-    game = Game.pick_card(game, card) |> broadcast
-    game = Game.guess(game) |> broadcast
+    game = game |> Game.pick_card(card) |> Game.guess |> broadcast
 
     game = cond do
-      game.is_set -> Game.replace_guessed_cards(game)
-      Game.full_hand?(game) -> Game.reset_hand(game)
+      game.is_set -> Game.replace_guessed_cards(game) |> broadcast
+      Game.full_hand?(game) -> Game.reset_hand(game) |> broadcast
       true -> game
     end
-
-    broadcast(game)
 
     {:reply, game, game}
   end
 
   def handle_call({:guess_no_set}, _from, game) do
-    unless game.any_sets do
-      game = game |> Game.deal_three_more |> broadcast
-    end
+    game =
+      case game.any_sets do
+        true -> game |> Game.deal_three_more |> broadcast
+        false -> game
+      end
 
     {:reply, game, game}
   end

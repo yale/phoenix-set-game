@@ -45,7 +45,7 @@ defmodule SetGame.Card do
 end
 
 defimpl Inspect, for: SetGame.Card do
-  def inspect(card, opts) do
+  def inspect(card, _opts) do
     "#SetGame.Card<"
     <> Enum.join([card.number, card.color, card.shading, card.shape], " ")
     <> ">"

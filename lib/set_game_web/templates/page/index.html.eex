@@ -1,7 +1,7 @@
 <div class="container">
   <div class="jumbotron">
     <h1>SET</h1>
-    <%= form_for @conn, game_path(@conn, :create), [as: :game], fn f -> %>
+    <%= form_for @conn, game_path(@conn, :create), [as: :game], fn _f -> %>
       <%= submit "New Game", class: "btn btn-lg btn-primary" %>
     <% end %>
   </div>

@@ -5,27 +5,26 @@ import cn from 'classnames';
 import throttle from 'lodash.throttle';
 
 import Card from './card';
-import { Socket } from "phoenix"
-
-const socket = new Socket("/socket", {params: {token: window.userToken}})
-socket.connect();
+import GameClient from './gameClient';
 
 class Game extends Component {
   state = { initialLoad: true };
 
   componentDidMount() {
-    this.channel = socket.channel(`game:${this.props.id}`, {});
-
-    this.channel.join()
-      .receive("ok", resp => this.setState({ ...resp, initialLoad: false }))
-      .receive("error", resp => { console.log("Unable to join", resp) });
-
-    this.channel.on("game:updated", game => this.throttleSetState(game));
+    this.client = new GameClient(this.props.id, {
+      onGameUpdate: this.handleGameUpdate,
+      onJoinError: this.handleJoinError,
+    });
   }
 
-  throttleSetState = throttle((state) => this.setState(state), 300);
+  throttleSetState = throttle((state) => this.setState(state), 150);
 
-  handleSelectCard = (id) => this.channel.push(`game:pick_card:${id}`);
+  handleJoinError = resp => console.error("Unable to join", resp);
+  handleGameUpdate = state => {
+    console.log(state);
+    this.throttleSetState({ ...state, initialLoad: false });
+  }
+  handleSelectCard = (id) => this.client.pickCard(id);
 
   handleGuessNoSet = () => {
     if (this.state.any_sets) {
@@ -33,7 +32,7 @@ class Game extends Component {
       return;
     }
 
-    this.channel.push("game:guess_no_set");
+    this.client.guessNoSet();
   }
 
   render() {

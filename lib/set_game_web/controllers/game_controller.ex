@@ -1,6 +1,8 @@
 defmodule SetGameWeb.GameController do
   use SetGameWeb, :controller
 
+  # If a deck size is provided, start a game of that deck size.
+  # Helpful for debugging end-of-game logic.
   def create(conn, %{"deck_size" => deck_size}) do
     SetGame.Deck.new
     |> SetGame.Deck.shuffle
@@ -28,6 +30,7 @@ defmodule SetGameWeb.GameController do
       {:notfound, nil} -> redirect(conn, to: "/error/404")
       {:ok, game_server} ->
         game = SetGame.GameServer.state(game_server)
+
         conn
         |> assign(:game, game)
         |> render("admin.html")

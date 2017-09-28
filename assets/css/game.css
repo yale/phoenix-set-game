@@ -13,7 +13,6 @@
 }
 
 .game.isSet {
-  background-color: green;
 }
 
 .game.gameOver .card .shape {

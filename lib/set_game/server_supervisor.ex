@@ -13,7 +13,7 @@ defmodule SetGame.ServerSupervisor do
 
   def init(:ok) do
     supervise([
-      worker(SetGame.GameServer, [])
+      worker(SetGame.GameServer, [], restart: :transient)
     ], strategy: :simple_one_for_one)
   end
 end

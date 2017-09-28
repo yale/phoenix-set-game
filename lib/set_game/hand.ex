@@ -39,14 +39,27 @@ defmodule SetGame.Hand do
   end
 
   def is_set?(hand, size) when size == 3 do
-    Card.properties
-    |> Enum.all?(fn(property) ->
-      uniq_properties = hand
-      |> Enum.map(fn(card) -> Map.get(card, property) end)
-      |> Enum.uniq
-
-      length(uniq_properties) == 1 || length(uniq_properties) == 3
-    end)
+    hand
+    |> SetGame.Hand.set_violations
+    |> Enum.empty?
   end
   def is_set?(_hand, _size), do: false
+
+  def set_violations(hand) do
+    properties = Card.properties |> Enum.map(fn(property) ->
+      hand |> Enum.map(fn(card) -> Map.get(card, property) end)
+    end)
+
+    violating_propteries = Enum.reject(properties, fn(property) ->
+      len = property |> Enum.uniq |> length
+      len == 1 || len == 3
+    end)
+
+    violating_propteries
+    |> Enum.map(&Enum.sort/1)
+    |> Enum.map(fn (property) -> Enum.chunk_by(property, &(&1)) end)
+  end
+
+  def set_violations_description(_violations) do
+  end
 end
